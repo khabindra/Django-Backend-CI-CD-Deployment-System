@@ -34,3 +34,5 @@ jobs:
           pwd
           echo "Files in directory:"
           ls -la
+      - name: Print current date and time
+        run: date
