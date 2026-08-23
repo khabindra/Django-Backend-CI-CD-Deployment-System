@@ -5,5 +5,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('tasks.urls')), # Root routes to our tasks app
+    path('', include('tasks.urls')),  # Root routes to our tasks app
 ]
