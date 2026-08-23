@@ -2,6 +2,7 @@
 
 from rest_framework.test import APITestCase
 
+
 class HealthCheckTests(APITestCase):
     def test_health_endpoint_returns_200(self):
         """
