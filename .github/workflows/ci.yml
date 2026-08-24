@@ -48,6 +48,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12' # Check your local version with: python --version
+          cache: 'pip'  # <-- It magically caches dependencies.
 
       # 3. Install dependencies
       - name: Install dependencies
