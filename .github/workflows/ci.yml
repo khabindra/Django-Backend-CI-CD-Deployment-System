@@ -58,7 +58,10 @@ jobs:
       # 4. Run Linter
       - name: Run Flake8
         run: flake8 .
+      # 5. Migration CHeck 
+      - name: Check for missing migrations
+        run: python manage.py makemigrations --check --dry-run
 
-      # 5. Run Tests
+      # 6. Run Tests
       - name: Run Django Tests
         run: python manage.py test
