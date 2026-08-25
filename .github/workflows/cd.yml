@@ -1,0 +1,39 @@
+name: CD Pipeline
+
+# 1. Wait for the "CI Pipeline" to finish on the main branch
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    # Only run if the CI workflow was successful AND it was on the main branch
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+
+    steps:
+      - name: SSH into Server and Pull Latest Image
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: deploy
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Log into GHCR so the server has permission to pull the image
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # 2. Pull the latest image
+            docker pull ghcr.io/khabindra/django-backend-ci-cd-deployment-system:latest
+
+            # 3. Stop the old container (if it exists)
+            docker stop taskflow-app || true
+
+            # 4. Remove the old container
+            docker rm taskflow-app || true
+
+            # 5. Run the new container!
+            # Note: We will use port 8000 for now. Later we will use Nginx.
+            docker run -d -p 8000:8000 --name taskflow-app ghcr.io/khabindra/django-backend-ci-cd-deployment-system:latest
